@@ -34,7 +34,7 @@ fs.mkdirSync(pathToTmpDir)
   const pathToBundler = path.join(rootDir, 'node_modules/.bin/dts-bundle-generator') 
   
   try {
-    // --project ${path.join(__dirname, '../../../tsconfig.json')}
+    // --project ${path.join(rootDir, 'tsconfig.json')}
     await promiseExec(`${pathToBundler}
     -o ${pathToTmpDir}/bundle.d.ts ${pathToTypescript}`.replace(/\s+/g, ' '))
 
