@@ -1,0 +1,45 @@
+// intended to be placed in backends/api-server
+import faker from '@faker-js/faker'
+import { AppData, publicRoute, passthrough } from 'router'
+import { ResultAsync } from 'neverthrow'
+import routeErrors from 'errors'
+// INJECT IMPORT FOR INTERFACE HERE
+// OR
+// INJECT COPY OF INTERFACE DEFINITION HERE
+
+type ApiResponse = string // INJECT NAME OF INTERFACE
+
+const config = {
+  operation: 'read:user',
+  parser: passthrough(),
+}
+
+const generateMockData = async ({
+  maxDelayMs = 2000,
+  errorResistance = 0.95
+}: {
+  maxDelayMs?: number
+  errorResistance?: number
+}): Promise<ApiResponse> => {
+  // built in flake!
+  const errorRoll = Math.random()
+  if (errorRoll >= errorResistance) {
+    return Promise.reject()
+  }
+  
+  const delay = Math.max(500, Math.round(maxDelayMs * Math.random())) // minimum half second delay
+  await new Promise(resolve => setTimeout(resolve, delay))
+  return (
+    'NAME OF INTERFACE' // INJECT MOCK DATA CODE HERE
+  )
+}  
+
+export default publicRoute<ApiResponse>(
+  config,
+  ({ utils }) => {
+    return ResultAsync.fromPromise(
+      generateMockData({}), // OPTIONALLY OVERRIDE DEFAULTS HERE
+      (err) => utils.intoRouteError(routeErrors.other(`mock route failed. error: ${err}`))
+    ).map(AppData.init)
+  }
+)
