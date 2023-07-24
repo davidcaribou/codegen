@@ -2,9 +2,14 @@ import path from 'path'
 import fs from 'fs'
 import { exec } from 'child_process'
 import minimist from 'minimist'
+import { getMockDataCompletion } from '../../shared'
 
 const argv = minimist(process.argv.slice(2))
-const { path: pathToTypescript, endpoint } = argv
+const { 
+  path: pathToTypescript,
+  endpoint
+} = argv
+
 if (!pathToTypescript) {
   console.error('missing path flag.  try adding "--path ${path}"')
   process.exit(1)
@@ -39,9 +44,19 @@ fs.mkdirSync(pathToTmpDir)
     -o ${pathToTmpDir}/bundle.d.ts ${pathToTypescript}`.replace(/\s+/g, ' '))
 
     const contents = fs.readFileSync(`${pathToTmpDir}/bundle.d.ts`)
-    console.log('we got contents!', contents.length)
-    // completions portion 
 
+    // completions portion 
+    const maybeTypescriptCode = await getMockDataCompletion(
+      `
+      export type PartDPlanSearchResponse = {
+        plans: PartDPlanOption[];
+        drugs: PartDConsideredDrug[];
+        pharmacy: PartDConsideredPharmacy;
+      };
+      `,
+      contents
+    )
+    console.log('hi', maybeTypescriptCode)
   } catch(error) {
     console.error(error)
     process.exit(1)

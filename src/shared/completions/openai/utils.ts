@@ -1,14 +1,8 @@
 import { OpenAIApi } from 'openai'
 
-export interface CompletionsCache<T extends string> {
-  completions: Record<string, string>
-  getCacheKey: (input: string, key: T) => string
-}
-
 export interface GetCompletionFactoryArgs<T extends string> {
   openai: OpenAIApi
   systemPromptBuilder: Record<T, (...args: any[]) => string>
-  cache: CompletionsCache<T>
 }
 
 export interface CompletionFactoryArgs<T extends string> {
@@ -18,7 +12,6 @@ export interface CompletionFactoryArgs<T extends string> {
 
 export const getCompletionFactory = <T extends string>({
   openai,
-  cache: { getCacheKey, completions},
   systemPromptBuilder
 }: GetCompletionFactoryArgs<T>) => {
   return function completionFactory({
@@ -27,13 +20,8 @@ export const getCompletionFactory = <T extends string>({
   }: CompletionFactoryArgs<T>){
     return async function getCompletion(
       input: string,
-      noCache: boolean,
       ...args: any[]
     ): Promise<string | null>  {
-      const cacheKey = getCacheKey(input, promptKey)
-      if (typeof completions[cacheKey] === 'string' && noCache !== true) {
-        return completions[cacheKey]
-      }
       const systemPrompt = systemPromptBuilder[promptKey](...args)
       try {
         const completion = await openai.createChatCompletion({
@@ -48,9 +36,10 @@ export const getCompletionFactory = <T extends string>({
         })
         console.info('completion response:', completion.data.choices)
         const response = completion.data.choices[0].message
-        // if we get a valid response, save to cache!
+
+        // optionally validate (i.e. parse) the response string from gpt before returning the string
+        // useful if requesting json strings
         if (response?.content && validateCompletion?.(response.content) !== false) {
-          completions[cacheKey] = response.content
           return response.content
         }
       } catch(error) {

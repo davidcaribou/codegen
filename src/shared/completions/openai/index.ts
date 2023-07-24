@@ -8,5 +8,4 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-export * from './utils'
 export const openai = new OpenAIApi(configuration);
