@@ -3,6 +3,7 @@ import fs from 'fs'
 import { exec } from 'child_process'
 import minimist from 'minimist'
 import { getMockDataCompletion } from '../../shared'
+import { getRouteCode } from './template'
 
 const argv = minimist(process.argv.slice(2))
 const { 
@@ -32,11 +33,11 @@ const rootDir = path.join(__dirname, '../../../')
 
 // tmp contents going to be placed in git-ignored output directory
 // (re)make the directory every time from scratch
-const pathToTmpDir = path.join(rootDir, 'output')
-if (fs.existsSync(pathToTmpDir)) {
-  fs.rmSync(pathToTmpDir, { recursive: true })
+const pathToOutputDir = path.join(rootDir, 'output')
+if (fs.existsSync(pathToOutputDir)) {
+  fs.rmSync(pathToOutputDir, { recursive: true })
 }
-fs.mkdirSync(pathToTmpDir)
+fs.mkdirSync(pathToOutputDir)
 
 ;(async () => {
   // see package.json "dts-bundle-generator": "^8.0.1",
@@ -46,22 +47,49 @@ fs.mkdirSync(pathToTmpDir)
   try {
     // --project ${path.join(rootDir, 'tsconfig.json')}
     await promiseExec(`${pathToBundler}
-    -o ${pathToTmpDir}/bundle.d.ts ${pathToTypescript}`.replace(/\s+/g, ' '))
+    -o ${pathToOutputDir}/bundle.d.ts ${pathToTypescript}`.replace(/\s+/g, ' '))
 
-    const contents = fs.readFileSync(`${pathToTmpDir}/bundle.d.ts`)
+    const contents = fs.readFileSync(`${pathToOutputDir}/bundle.d.ts`)
 
     // completions
     const maybeTypescriptCode = await getMockDataCompletion(
       interfaceName,
       String(contents)
     )
-    console.log(maybeTypescriptCode)
+    if (typeof maybeTypescriptCode === 'string') {
+      outputCode({
+        code: maybeTypescriptCode,
+        endpoint,
+        interfaceName,
+        outputDir: pathToOutputDir
+      })
+    }
   } catch(error) {
     console.error(error)
     process.exit(1)
   }
 })()
 
+function outputCode({
+  code,
+  interfaceName,
+  endpoint,
+  outputDir,
+}:{
+  code: string
+  interfaceName: string
+  endpoint: string
+  outputDir: string
+}) {
+  fs.writeFileSync(
+    path.join(outputDir, 'route.ts'),
+    getRouteCode(interfaceName, code)
+  )
+  fs.writeFileSync(
+    path.join(outputDir, `hook.ts`),
+    getRouteCode(interfaceName, endpoint)
+  )
+}
 
 function promiseExec(cmd: string) {
   return new Promise((resolve, reject) => {
