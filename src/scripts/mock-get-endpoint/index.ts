@@ -3,7 +3,7 @@ import fs from 'fs'
 import { exec } from 'child_process'
 import minimist from 'minimist'
 import { getMockDataCompletion } from '../../shared'
-import { getRouteCode } from './template'
+import { getApiHook, getRouteCode } from './template'
 
 const argv = minimist(process.argv.slice(2))
 const { 
@@ -87,7 +87,7 @@ function outputCode({
   )
   fs.writeFileSync(
     path.join(outputDir, `hook.ts`),
-    getRouteCode(interfaceName, endpoint)
+    getApiHook(interfaceName, endpoint)
   )
 }
 

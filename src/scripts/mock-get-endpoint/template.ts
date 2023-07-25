@@ -1,14 +1,15 @@
 export const getRouteCode = (interfaceName: string, mockDataVariable: string) => `
-import faker from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 import { AppData, publicRoute, passthrough } from 'router'
 import { ResultAsync } from 'neverthrow'
 import routeErrors from 'errors'
 import { ${interfaceName} } from 'shared'
+import { RbacPermission } from 'router/rbac'
 
 type ApiResponse = ${interfaceName}
 
 const config = {
-  operation: 'read:user',
+  operation: 'read:user' as RbacPermission,
   parser: passthrough(),
 }
 
@@ -36,7 +37,7 @@ export default publicRoute<ApiResponse>(
   ({ utils }) => {
     return ResultAsync.fromPromise(
       generateMockData({}), // OPTIONALLY OVERRIDE DEFAULTS HERE
-      (err) => utils.intoRouteError(routeErrors.other('mock route failed. error: '+ err'))
+      (err) => utils.intoRouteError(routeErrors.other('mock route failed. error: '+ err))
     ).map(AppData.init)
   }
 )
@@ -47,8 +48,8 @@ export const getApiHook = (interfaceName: string, endpoint: string) => {
     import { useGetPrivateRequest } from '../fetch-promise'
 
     export const useGet${interfaceName} = () => {
-      const _fetch = useGetPrivateRequest<DrugResponse[], undefined>({
-        url: '${endpoint}',
+      const _fetch = useGetPrivateRequest<${interfaceName}, undefined>({
+        url: 'mock/${endpoint}',
       })
     
       return async () => {
