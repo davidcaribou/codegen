@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "mock-get-endpoint": "node ./dist/scripts/mock-get-endpoint/index.js"
+    "mock-get": "node ./dist/scripts/mock-get-endpoint/index.js"
   },
   "keywords": [],
   "author": "",

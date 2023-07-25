@@ -1,10 +1,17 @@
-export const getMockDataPrompt = ([ declarationCode ]: string[]) => {
+export const getMockDataPrompt = (declarationCode: string) => {
   return (
     `Respond to user statements referencing a type alias or interface contained in the typescript declaration code included
-    at the end of this prompt. Reply with typescript code that initializes a const variable,
-    named "mockData", of the stated type. Use the faker-js library to provide random typed data.  Make the reply a
-    string of valid typescript code that is formatted for readability.
-    If the type specified by the user is not contained in this system prompt, then responsd simply with 'idk'.
+    at the end of this prompt. Reply with a string of valid typescript code that initializes a const variable,
+    named "mockData", of the stated type. Choose from among the following faker-js commands to provide the
+    values for the mock data:
+    * faker.name.firstName
+    * faker.name.lastName
+    * faker.helper.arrayElement
+    * faker.datatype.number
+    * faker.lorem.word
+    * faker.datatype.uuid
+    
+    If the type specified by the user is not contained in this system prompt, then respond with 'idk'.
     
     i.e. In response to a user statement: 
     \`\`\`
@@ -16,7 +23,7 @@ export const getMockDataPrompt = ([ declarationCode ]: string[]) => {
     const mockData: Student = {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
-      studentId: faker.number.bigInt()
+      studentId: faker.datatype.uuid()
     }
     \`\`\`
   

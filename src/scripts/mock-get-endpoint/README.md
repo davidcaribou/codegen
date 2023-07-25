@@ -5,12 +5,12 @@ A script to auto-generate code for a mock GET endpoint in `backends/api-server`.
 ## Usage
 
 ```
-node ./generate-mock-get-endpoint --path ${pathToFileContainingResponseType} --endpoint${mockEndpointPath} --interface ${ResponseTypeInterfaceName}
+node ./generate-mock-get-endpoint --path ${pathToFileContainingResponseType} --endpoint${mockEndpointPath} --interfaceName ${ResponseTypeInterfaceName}
 ```
 
 For example:
 ```
-node ./generate-mock-get-endpoint --path /Users/me/workspace/caribou/shared/route-responses/thing.ts --endpoint /drugs/hr-banana --interface HrBananaResponse
+node ./generate-mock-get-endpoint --path /Users/me/workspace/caribou/shared/route-responses/thing.ts --endpoint /drugs/hr-banana --interfaceName HrBananaResponse
 ```
 
 Output will be a couple of files that can then be copy pasted into `backends/api-server`. 

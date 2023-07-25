@@ -1,13 +1,10 @@
-// intended to be placed in backends/api-server
 import faker from '@faker-js/faker'
 import { AppData, publicRoute, passthrough } from 'router'
 import { ResultAsync } from 'neverthrow'
 import routeErrors from 'errors'
-// INJECT IMPORT FOR INTERFACE HERE
-// OR
-// INJECT COPY OF INTERFACE DEFINITION HERE
+import { ${interface} } from 'shared'
 
-type ApiResponse = string // INJECT NAME OF INTERFACE
+type ApiResponse = ${interface}
 
 const config = {
   operation: 'read:user',
@@ -29,9 +26,8 @@ const generateMockData = async ({
   
   const delay = Math.max(500, Math.round(maxDelayMs * Math.random())) // minimum half second delay
   await new Promise(resolve => setTimeout(resolve, delay))
-  return (
-    'NAME OF INTERFACE' // INJECT MOCK DATA CODE HERE
-  )
+  ${mockDataVariable}
+  return mockData
 }  
 
 export default publicRoute<ApiResponse>(

@@ -1,7 +1,8 @@
 import path from 'path'
 import { Configuration, OpenAIApi } from "openai";
 import * as dotenv from 'dotenv'
-dotenv.config({ path: path.join(__dirname, '../../.env')})
+// sorry for this
+dotenv.config({ path: path.join(__dirname, '../../../../.env')})
 
 const configuration = new Configuration({
     organization: process.env.OPENAI_ORG_KEY,

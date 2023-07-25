@@ -25,7 +25,7 @@ export const getCompletionFactory = <T extends string>({
       const systemPrompt = systemPromptBuilder[promptKey](...args)
       try {
         const completion = await openai.createChatCompletion({
-          model: 'gpt-4',
+          model: process.env.MODEL_NAME ?? 'gpt-4',
           messages: [{
             role: 'system',
             content: systemPrompt,

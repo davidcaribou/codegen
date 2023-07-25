@@ -7,7 +7,8 @@ import { getMockDataCompletion } from '../../shared'
 const argv = minimist(process.argv.slice(2))
 const { 
   path: pathToTypescript,
-  endpoint
+  endpoint,
+  interfaceName,
 } = argv
 
 if (!pathToTypescript) {
@@ -20,6 +21,10 @@ if (!fs.existsSync(pathToTypescript)) {
 }
 if (!endpoint) {
   console.error('missing endpoint flag.  try adding "--endpoint ${endpoint}"')
+  process.exit(1)
+}
+if (!interfaceName) {
+  console.error('missing interface name.')
   process.exit(1)
 }
 
@@ -45,18 +50,12 @@ fs.mkdirSync(pathToTmpDir)
 
     const contents = fs.readFileSync(`${pathToTmpDir}/bundle.d.ts`)
 
-    // completions portion 
+    // completions
     const maybeTypescriptCode = await getMockDataCompletion(
-      `
-      export type PartDPlanSearchResponse = {
-        plans: PartDPlanOption[];
-        drugs: PartDConsideredDrug[];
-        pharmacy: PartDConsideredPharmacy;
-      };
-      `,
-      contents
+      interfaceName,
+      String(contents)
     )
-    console.log('hi', maybeTypescriptCode)
+    console.log(maybeTypescriptCode)
   } catch(error) {
     console.error(error)
     process.exit(1)
